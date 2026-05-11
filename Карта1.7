@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карточка-раскладка № 1.7</title>
+    <link href="https://cdn.jsdelivr.net/npm/fontsource@latest/lora/latin.css" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #faf7f0;
+            --parchment: #f5f0e1;
+            --dark-brown: #3d2b1f;
+            --medium-brown: #6b4c3b;
+            --light-brown: #8c6d5e;
+            --border-color: #c4a882;
+            --border-light: #ddd5c4;
+            --highlight: #e8dcc8;
+            --accent: #4a7c59;
+            --accent-light: #6b9e7a;
+            --shadow: rgba(61, 43, 31, 0.12);
+            --shadow-strong: rgba(61, 43, 31, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lora', 'Times New Roman', Georgia, serif;
+            background: linear-gradient(145deg, #e8e0d0, #d4cbb8, #e0d6c4);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            color: var(--dark-brown);
+        }
+
+        .page-wrapper {
+            max-width: 900px;
+            width: 100%;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .page-header::after {
+            content: '';
+            display: block;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+            margin: 15px auto 0;
+        }
+
+        .page-header h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--dark-brown);
+            margin-bottom: 25px;
+            text-shadow: 0 1px 2px var(--shadow);
+        }
+
+        .card {
+            background: var(--cream);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 40px 45px;
+            box-shadow: 0 8px 32px var(--shadow), 0 2px 8px var(--shadow);
+            position: relative;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 12px 48px var(--shadow-strong), 0 4px 12px var(--shadow);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--border-color), var(--medium-brown), var(--border-color));
+            border-radius: 4px 4px 0 0;
+        }
+
+        .card-title {
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            margin-bottom: 20px;
+            color: var(--medium-brown);
+        }
+
+        .dish-name {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            line-height: 1.5;
+            color: var(--dark-brown);
+        }
+
+        .dish-name strong {
+            font-weight: 600;
+        }
+
+        .indications {
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: var(--medium-brown);
+        }
+
+        .indications .highlight-diets {
+            display: inline;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: default;
+            position: relative;
+            border-bottom: 1px dashed var(--accent-light);
+            transition: color 0.3s;
+        }
+
+        .indications .highlight-diets:hover {
+            color: var(--accent-light);
+        }
+
+        .tooltip-container {
+            position: relative;
+            display: inline;
+        }
+
+        .tooltip-popup {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark-brown);
+            color: var(--cream);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 100;
+            box-shadow: 0 4px 12px var(--shadow-strong);
+            margin-bottom: 6px;
+            animation: tooltipFade 0.2s ease;
+        }
+
+        .tooltip-popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--dark-brown);
+        }
+
+        .tooltip-container:hover .tooltip-popup {
+            display: block;
+        }
+
+        @keyframes tooltipFade {
+            from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            line-height: 1.45;
+        }
+
+        thead th {
+            background: var(--parchment);
+            border: 1px solid var(--border-color);
+            padding: 10px 8px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            text-align: center;
+            vertical-align: middle;
+            color: var(--dark-brown);
+            position: relative;
+        }
+
+        thead th .sub-header {
+            font-weight: 500;
+            font-size: 0.78rem;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .col-product {
+            width: 30%;
+            text-align: left;
+            padding-left: 12px;
+        }
+
+        .col-brutto, .col-netto, .col-protein, .col-fat, .col-carbs, .col-calories {
+            width: calc(70% / 6);
+        }
+
+        tbody td {
+            border: 1px solid var(--border-light);
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:hover td {
+            background-color: var(--highlight);
+        }
+
+        tbody td:first-child {
+            text-align: left;
+            padding-left: 12px;
+        }
+
+        .cell-product {
+            font-weight: 500;
+            color: var(--dark-brown);
+        }
+
+        .cell-dash {
+            color: var(--light-brown);
+        }
+
+        .cell-number {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .row-total {
+            font-weight: 700;
+            background: var(--parchment) !important;
+        }
+
+        .row-total td {
+            border-top: 2px solid var(--medium-brown);
+            font-weight: 600;
+        }
+
+        .row-subtotal td {
+            font-weight: 500;
+            color: var(--medium-brown);
+        }
+
+        .oil-row {
+            position: relative;
+        }
+
+        .oil-row td:first-child {
+            color: var(--medium-brown);
+            font-style: italic;
+        }
+
+        .or-separator {
+            text-align: center;
+            font-style: italic;
+            color: var(--light-brown);
+            font-size: 0.8rem;
+            padding: 3px 8px !important;
+        }
+
+        .footnote {
+            font-size: 0.8rem;
+            color: var(--light-brown);
+            margin-bottom: 20px;
+            padding-left: 5px;
+        }
+
+        .footnote sup {
+            font-size: 0.7rem;
+            color: var(--accent);
+        }
+
+        .tech-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--medium-brown);
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: color 0.3s;
+        }
+
+        .tech-title:hover {
+            color: var(--dark-brown);
+        }
+
+        .tech-toggle {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            color: var(--border-color);
+        }
+
+        .tech-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .tech-text {
+            font-size: 0.88rem;
+            line-height: 1.75;
+            color: var(--medium-brown);
+            max-height: 200px;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .tech-text.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        .interactive-row {
+            cursor: pointer;
+        }
+
+        .interactive-row:hover td {
+            background-color: #f0e8d8 !important;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .portion-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 12px 18px;
+            background: var(--parchment);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            flex-wrap: wrap;
+        }
+
+        .portion-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--medium-brown);
+        }
+
+        .portion-btn {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.82rem;
+            color: var(--dark-brown);
+            transition: all 0.2s ease;
+        }
+
+        .portion-btn:hover {
+            background: var(--highlight);
+            border-color: var(--medium-brown);
+        }
+
+        .portion-btn.active {
+            background: var(--medium-brown);
+            color: white;
+            border-color: var(--medium-brown);
+        }
+
+        .portion-result {
+            margin-left: auto;
+            font-size: 0.82rem;
+            color: var(--light-brown);
+        }
+
+        .portion-result strong {
+            color: var(--accent);
+        }
+
+        .calorie-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #f0f7f0, #e8f0e8);
+            border-radius: 8px;
+            border: 1px solid #c8dcc8;
+        }
+
+        .calorie-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .calorie-text {
+            font-size: 0.82rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .nutrient-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .bar-label {
+            font-size: 0.75rem;
+            color: var(--light-brown);
+            width: 55px;
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 6px;
+            background: var(--border-light);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        .bar-fill.protein { background: #5b9bd5; }
+        .bar-fill.fat { background: #f0a050; }
+        .bar-fill.carbs { background: #6bc570; }
+
+        .bar-value {
+            font-size: 0.75rem;
+            color: var(--dark-brown);
+            width: 60px;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .card {
+                padding: 25px 18px;
+            }
+
+            table {
+                font-size: 0.75rem;
+            }
+
+            thead th {
+                padding: 7px 4px;
+                font-size: 0.72rem;
+            }
+
+            tbody td {
+                padding: 6px 4px;
+            }
+
+            .col-product {
+                padding-left: 6px;
+            }
+
+            .portion-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .portion-result {
+                margin-left: 0;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .print-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.78rem;
+            color: var(--light-brown);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .print-btn:hover {
+            color: var(--dark-brown);
+            border-color: var(--medium-brown);
+            background: var(--highlight);
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+            .portion-selector, .print-btn, .nutrient-bar, .calorie-indicator {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+    <div class="page-header">
+        <h1>Салаты из белокочанной капусты</h1>
+    </div>
+
+    <div class="card">
+        <button class="print-btn" onclick="window.print()" title="Печать карточки">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Печать
+        </button>
+
+        <div class="card-title">КАРТОЧКА-РАСКЛАДКА № 1.7</div>
+
+        <div class="dish-name">
+            Наименование блюда: <strong>Салат из белокочанной капусты с р/м</strong>
+        </div>
+
+        <div class="indications">
+            Показания к применению:
+            <span class="tooltip-container">
+                <span class="highlight-diets">ОВД</span>
+                <span class="tooltip-popup">Общий вариант диеты</span>
+            </span>,
+            <span class="tooltip-container">
+                <span class="highlight-diets">ВБД</span>
+                <span class="tooltip-popup">Вариант диеты с повышенным содержанием белка</span>
+            </span>,
+            <span class="tooltip-container">
+                <span class="highlight-diets">ВКД</span>
+                <span class="tooltip-popup">Вариант диеты с пониженной калорийностью</span>
+            </span>,
+            <span class="tooltip-container">
+                <span class="highlight-diets">НКД</span>
+                <span class="tooltip-popup">Вариант диеты с нормальным содержанием белка, с ограничением жиров и углеводов</span>
+            </span>,
+            <span class="tooltip-container">
+                <span class="highlight-diets">НБД*</span>
+                <span class="tooltip-popup">Вариант диеты с нормальным содержанием белка, с ограничением химических и механических раздражителей</span>
+            </span>
+        </div>
+
+        <div class="portion-selector">
+            <span class="portion-label">Порция:</span>
+            <button class="portion-btn active" data-portion="90" onclick="setPortion(90, this)">90 г</button>
+            <button class="portion-btn" data-portion="150" onclick="setPortion(150, this)">150 г</button>
+            <button class="portion-btn" data-portion="200" onclick="setPortion(200, this)">200 г</button>
+            <button class="portion-btn" data-portion="95" onclick="setPortion(95, this)">95 г (с 10г масла)</button>
+            <span class="portion-result" id="portionResult">
+                Калорийность: <strong>81,01</strong> ккал
+            </span>
+        </div>
+
+        <div class="table-container">
+            <table id="recipeTable">
+                <thead>
+                    <tr>
+                        <th class="col-product" rowspan="2">Наименование продукта</th>
+                        <th rowspan="2" class="col-brutto">Брутто,<br><span class="sub-header">г</span></th>
+                        <th rowspan="2" class="col-netto">Нетто,<br><span class="sub-header">г</span></th>
+                        <th colspan="4">Химический состав</th>
+                    </tr>
+                    <tr>
+                        <th class="col-protein">Белки,<br><span class="sub-header">г</span></th>
+                        <th class="col-fat">Жиры,<br><span class="sub-header">г</span></th>
+                        <th class="col-carbs">Углеводы,<br><span class="sub-header">г</span></th>
+                        <th class="col-calories">Калорий-<br>ность,<br><span class="sub-header">ккал</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="interactive-row">
+                        <td class="cell-product">
+                            Капуста белокочанная свежая сырая очищенная:<br>
+                            <small style="color: var(--light-brown);">х/о – 20%,<br>х/о – тёртая – 37%</small>
+                        </td>
+                        <td class="cell-number">168</td>
+                        <td class="cell-number">
+                            <span class="tooltip-container">
+                                85
+                                <span class="tooltip-popup">После очистки и шинковки</span>
+                            </span>
+                        </td>
+                        <td class="cell-number">2,41</td>
+                        <td class="cell-number">0,14</td>
+                        <td class="cell-number">6,30</td>
+                        <td class="cell-number">36,10</td>
+                    </tr>
+                    <tr class="interactive-row oil-row">
+                        <td class="cell-product">Масло растительное</td>
+                        <td class="cell-number">5</td>
+                        <td class="cell-number">5</td>
+                        <td class="cell-dash">–</td>
+                        <td class="cell-number">4,99</td>
+                        <td class="cell-dash">–</td>
+                        <td class="cell-number">44,91</td>
+                    </tr>
+                    <tr class="interactive-row oil-row">
+                        <td class="cell-product">или</td>
+                        <td class="cell-number">10</td>
+                        <td class="cell-number">10</td>
+                        <td class="cell-dash">–</td>
+                        <td class="cell-number">9,98</td>
+                        <td class="cell-dash">–</td>
+                        <td class="cell-number">89,82</td>
+                    </tr>
+                    <tr class="interactive-row">
+                        <td class="cell-product">Соль йодированная</td>
+                        <td class="cell-number">0,5</td>
+                        <td class="cell-number">0,5</td>
+                        <td class="cell-dash">–</td>
+                        <td class="cell-dash">–</td>
+                        <td class="cell-dash">–</td>
+                        <td class="cell-dash">–</td>
+                    </tr>
+                    <tr class="row-total" id="totalRow">
+                        <td class="cell-product">Вес готового блюда</td>
+                        <td class="cell-dash">–</td>
+                        <td class="cell-number" id="totalNetto">90</td>
+                        <td class="cell-number" id="totalProtein">2,41</td>
+                        <td class="cell-number" id="totalFat">5,13</td>
+                        <td class="cell-number" id="totalCarbs">6,30</td>
+                        <td class="cell-number" id="totalCalories">81,01</td>
+                    </tr>
+                    <tr class="row-total" id="totalRowOil10" style="display:none;">
+                        <td class="cell-product">Вес готового блюда (10 г масла)</td>
+                        <td class="cell-dash">–</td>
+                        <td class="cell-number" id="totalNetto10">95</td>
+                        <td class="cell-number" id="totalProtein10">2,41</td>
+                        <td class="cell-number" id="totalFat10">10,12</td>
+                        <td class="cell-number" id="totalCarbs10">6,30</td>
+                        <td class="cell-number" id="totalCalories10">125,92</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="calorie-indicator">
+            <div class="calorie-dot"></div>
+            <span class="calorie-text" id="calorieIndicator">
+                Общая калорийность на порцию (90 г): 81,01 ккал
+            </span>
+        </div>
+
+        <div class="nutrient-bar" id="nutrientBars">
+            <span class="bar-label">Белки</span>
+            <div class="bar-track"><div class="bar-fill protein" id="proteinBar" style="width: 11%"></div></div>
+            <span class="bar-value" id="proteinBarVal">2,41 г</span>
+        </div>
+        <div class="nutrient-bar">
+            <span class="bar-label">Жиры</span>
+            <div class="bar-track"><div class="bar-fill fat" id="fatBar" style="width: 24%"></div></div>
+            <span class="bar-value" id="fatBarVal">5,13 г</span>
+        </div>
+        <div class="nutrient-bar">
+            <span class="bar-label">Углеводы</span>
+            <div class="bar-track"><div class="bar-fill carbs" id="carbsBar" style="width: 29%"></div></div>
+            <span class="bar-value" id="carbsBarVal">6,30 г</span>
+        </div>
+
+        <div class="footnote">
+            <sup>*</sup> Готовить без соли
+        </div>
+
+        <div class="tech-title" onclick="toggleTechnology()">
+            <span>Технология приготовления</span>
+            <span class="tech-toggle open" id="techToggle">▼</span>
+        </div>
+        <div class="tech-text" id="techText">
+            Подготовленную капусту нашинковать, посыпать солью, перетереть до выделения капустного сока и образования мягкой консистенции. Перед отпуском заправить маслом растительным.
+        </div>
+    </div>
+</div>
+
+<script>
+    const data = {
+        90: {
+            netto: '90', protein: '2,41', fat: '5,13', carbs: '6,30', calories: '81,01',
+            desc: '(5 г масла)'
+        },
+        150: {
+            netto: '150', protein: '4,02', fat: '8,55', carbs: '10,50', calories: '135,02',
+            desc: '(5 г масла)'
+        },
+        200: {
+            netto: '200', protein: '5,36', fat: '11,40', carbs: '14,00', calories: '180,03',
+            desc: '(5 г масла)'
+        },
+        95: {
+            netto: '95', protein: '2,41', fat: '10,12', carbs: '6,30', calories: '125,92',
+            desc: '(10 г масла)'
+        }
+    };
+
+    function setPortion(size, btn) {
+        document.querySelectorAll('.portion-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const d = data[size];
+
+        document.getElementById('totalNetto').textContent = d.netto;
+        document.getElementById('totalProtein').textContent = d.protein;
+        document.getElementById('totalFat').textContent = d.fat;
+        document.getElementById('totalCarbs').textContent = d.carbs;
+        document.getElementById('totalCalories').textContent = d.calories;
+
+        document.getElementById('portionResult').innerHTML =
+            `Калорийность: <strong>${d.calories}</strong> ккал ${d.desc}`;
+
+        document.getElementById('calorieIndicator').textContent =
+            `Общая калорийность на порцию (${size} г): ${d.calories} ккал`;
+
+        const maxVal = 100;
+        document.getElementById('proteinBar').style.width =
+            (parseFloat(d.protein.replace(',', '.')) / maxVal * 100 * 2) + '%';
+        document.getElementById('proteinBarVal').textContent = d.protein + ' г';
+
+        document.getElementById('fatBar').style.width =
+            (parseFloat(d.fat.replace(',', '.')) / maxVal * 100) + '%';
+        document.getElementById('fatBarVal').textContent = d.fat + ' г';
+
+        document.getElementById('carbsBar').style.width =
+            (parseFloat(d.carbs.replace(',', '.')) / maxVal * 100 * 1.7) + '%';
+        document.getElementById('carbsBarVal').textContent = d.carbs + ' г';
+
+        if (size === 95) {
+            document.getElementById('totalRow').style.display = 'none';
+            document.getElementById('totalRowOil10').style.display = '';
+        } else {
+            document.getElementById('totalRow').style.display = '';
+            document.getElementById('totalRowOil10').style.display = 'none';
+        }
+
+        const table = document.getElementById('recipeTable');
+        table.classList.add('fade-in');
+        setTimeout(() => table.classList.remove('fade-in'), 400);
+    }
+
+    function toggleTechnology() {
+        const text = document.getElementById('techText');
+        const toggle = document.getElementById('techToggle');
+
+        if (text.classList.contains('collapsed')) {
+            text.classList.remove('collapsed');
+            toggle.classList.add('open');
+        } else {
+            text.classList.add('collapsed');
+            toggle.classList.remove('open');
+        }
+    }
+
+    // Row highlight effect
+    document.querySelectorAll('.interactive-row').forEach(row => {
+        row.addEventListener('mouseenter', function () {
+            this.style.transition = 'background-color 0.15s ease';
+        });
+    });
+</script>
+
+</body>
+</html>
+
